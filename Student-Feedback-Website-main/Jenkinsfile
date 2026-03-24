@@ -1,29 +1,37 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
                 git url: 'https://github.com/Aditya09977/devops-final', branch: 'main'
             }
         }
 
-        stage('Setup Environment') {
+        stage('Build') {
             steps {
-                bat 'mvn clean install -DskipTests'
+                dir('Student-Feedback-Website-main') {
+                    bat 'mvn clean install -DskipTests'
+                }
             }
         }
 
-        stage('Run Selenium Tests') {
+        stage('Run Tests') {
             steps {
-                bat 'mvn test'
+                dir('Student-Feedback-Website-main') {
+                    bat 'mvn test'
+                }
             }
         }
     }
 
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
+            junit 'Student-Feedback-Website-main/target/surefire-reports/*.xml'
         }
     }
 }
